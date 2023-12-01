@@ -72,7 +72,6 @@ def test_feats_similarity():
     assert Disambiguator.calculate_morph_similarity(m2, m3) == 0.75  # 3/4 equal
 
 
-@pytest.mark.now
 def test_disamb(doc):
     # Test correct pymorphy2 morphology disambiguation
     token = doc[12]  # корів - many options, but it's cows, not measles
@@ -90,7 +89,7 @@ def _test_disamb_text(doc):
         assert res.normal_form == token.lemma_
         assert str(res.tag.POS) == token.pos_
 
-
+@pytest.mark.now
 def test_feats_similarity_weighted():
     # test (simple) similarity calculation between dictionaries
 
@@ -160,5 +159,10 @@ def test_feats_similarity_weighted():
     assert Disambiguator.weighted_calculate_morph_similarity(
         m3, m3_11
     ) < Disambiguator.weighted_calculate_morph_similarity(m3, m3_12)
+
+
+    dd = Disambiguator(normal_form=1000)
+    assert dd.weighted_calculate_morph_similarity(m3, m3_1, w_normal) > 0.99
+
 
     # TODO - do some neat examples with real words/morphologies demostrating this weighting mechanism thing

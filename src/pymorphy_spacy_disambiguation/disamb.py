@@ -81,6 +81,7 @@ class Disambiguator:
         and explicitly handle token without POS / not in dictionary / in dict with Noe
     TODO: do I want to make it usable in Russian too? How much effort to test?
 
+    TODO: allow setting weights from init
 
     Pymorphy OCT list of tags: https://github.com/pymorphy2/pymorphy2/blob/master/pymorphy2/tagset.py
     """
@@ -94,7 +95,7 @@ class Disambiguator:
     #  UD14_grammemes = Tag14.GRAM_MAP # .items() l.129
 
     def __init__(
-        self, pymorphy_analyzer=None, similarity_weights: SimilarityWeighting = None
+        self, pymorphy_analyzer=None, similarity_weights: SimilarityWeighting = None, **kwargs
     ):  # , spacy_pipeline=None):
         # TODO - exceptions if pymorphy2-ua is not downloaded
         self.pymorphy_analyzer = (
@@ -105,7 +106,7 @@ class Disambiguator:
         #  self.nlp = spacy_pipeline if spacy_pipeline else spacy.load(MODEL_NAME_UA)
         self.converter = converters.converter("opencorpora-int", "ud14")
         self.weights = (
-            similarity_weights if similarity_weights else SimilarityWeighting()
+            similarity_weights if similarity_weights else SimilarityWeighting(**kwargs)
         )
 
     @staticmethod
