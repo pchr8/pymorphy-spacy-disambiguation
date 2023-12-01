@@ -217,7 +217,6 @@ class Disambiguator:
         # Pymorphy2 parsing results (+ as dicts)
         pym_morphs = self.pymorphy_analyzer.parse(token.text)
         pym_dicts = [self._pym_morph_to_dict(x) for x in pym_morphs]
-        b()
 
         # Pick the best one
         best_morph_i = self.get_best_morphological_analysis_index(
