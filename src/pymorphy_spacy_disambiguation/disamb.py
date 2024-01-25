@@ -199,7 +199,7 @@ class Disambiguator:
         logger.debug(
             f"The most similar morphology to {sp_morph} is {pym_morphs[i]} with {i=} {best_sim=}"
         )
-        return i
+        return best_morphology_index
 
     def select_best_pymorphy_parsing(
         self, token: Token, pym_morphs: list[Parse]
