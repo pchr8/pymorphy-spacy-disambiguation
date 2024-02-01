@@ -1,8 +1,5 @@
 import logging
 
-logging.basicConfig()
-logger = logging.getLogger(__package__)
-
 from pathlib import Path
 from typing import List, Tuple, Optional, Dict, Union, Any
 
@@ -15,9 +12,10 @@ from pymorphy2.analyzer import Parse
 
 from dataclasses import dataclass, field
 
-
 from russian_tagsets import converters
 from russian_tagsets.ud import Tag14
+
+logger = logging.getLogger(__package__)
 
 b = breakpoint
 
