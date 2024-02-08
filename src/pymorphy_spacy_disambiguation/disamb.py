@@ -73,7 +73,7 @@ class SimilarityWeighting:
 class Disambiguator:
     """
     Class that disambiguates between different pymorphy2 parsings
-    using data from spacy. Ukrainian-first, Russian probably supported as well. 
+    using data from spacy. Ukrainian-first, Russian probably supported as well.
 
     TODO: clean handling of corner cases like no parsing, no POS etc.
         and explicitly handle token without POS / not in dictionary / in dict with Noe
@@ -93,7 +93,10 @@ class Disambiguator:
     #  UD14_grammemes = Tag14.GRAM_MAP # .items() l.129
 
     def __init__(
-        self, pymorphy_analyzer=None, similarity_weights: SimilarityWeighting = None, **kwargs
+        self,
+        pymorphy_analyzer=None,
+        similarity_weights: SimilarityWeighting = None,
+        **kwargs,
     ):  # , spacy_pipeline=None):
         # TODO - exceptions if pymorphy2-ua is not downloaded
         self.pymorphy_analyzer = (
@@ -106,6 +109,12 @@ class Disambiguator:
         self.weights = (
             similarity_weights if similarity_weights else SimilarityWeighting(**kwargs)
         )
+
+    def __call__(self, token: Token) -> Parse:
+        return self.get_with_disambiguation(token)
+
+    def pymorphy_parse(self, token: str, **kwargs) -> list[Parse]:
+        return self.pymorphy_analyzer.parse(token, **kwargs)
 
     @staticmethod
     def get_spacy_morph(token: Token):
@@ -244,6 +253,8 @@ class Disambiguator:
         See https://pymorphy2.readthedocs.io/en/stable/user/guide.html#select-correct
             for pymorphy2 docu on selecting the correct parsing option.
         """
+        if isinstance(token, str):
+            raise ValueError(f"Only spacy tokens are supported, not str.")
         if isinstance(token, spacy.tokens.Doc):
             # TODO - allow this
             raise NotImplementedError
