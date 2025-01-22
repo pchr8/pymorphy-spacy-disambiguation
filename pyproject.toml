@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pymorphy-spacy-disambiguation"
 version = "0.1.4"
-description = "A package that picks the correct pymorphy3 morphology analysis based on morphology data from spacy."
+description = "Use spacy to disambiguate pymorphy3 morphology analyses."
 authors = ["Hamotskyi, Serhii <serhii@serhii.net>"]
 readme = "README.md"
 packages = [{include = "pymorphy_spacy_disambiguation", from = "src"}]
