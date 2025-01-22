@@ -96,7 +96,6 @@ def _test_disamb_text(doc):
         assert str(res.tag.POS) == token.pos_
 
 
-@pytest.mark.now
 def test_feats_similarity_weighted():
     # test (simple) similarity calculation between dictionaries
 

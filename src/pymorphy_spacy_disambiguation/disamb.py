@@ -19,8 +19,6 @@ logger = logging.getLogger(__package__)
 
 b = breakpoint
 
-#  MODEL_NAME_UA = "uk_core_news_sm"
-
 
 @dataclass
 class SimilarityWeighting:
@@ -39,8 +37,9 @@ class SimilarityWeighting:
             that don't match to pymorphy's OpencorporaTag anymore
     """
 
-    # Certainty score assigned by pymorphy2 (for Russian only!).
+    # Certainty score assigned by pymorphy (for Russian only!).
     # This weighting is a multiplier for that score
+    # TODO: moot w/ Ukrainian dictionaries, but we allow passing other ones as well
     score: float = 1.0
 
     # Whether the lemma / normal_form is equal
@@ -98,7 +97,7 @@ class Disambiguator:
         similarity_weights: SimilarityWeighting = None,
         **kwargs,
     ):  # , spacy_pipeline=None):
-        # TODO - exceptions if pymorphy2-ua is not downloaded
+        # TODO - exceptions if pymorphy dicts is not downloaded
         self.pymorphy_analyzer = (
             pymorphy_analyzer
             if pymorphy_analyzer
@@ -129,7 +128,7 @@ class Disambiguator:
         #  tag: OpencorporaTag,
         parse: Parse,
     ) -> dict[str, str]:
-        """Convert Pymorphy2's OpencorporaTag to FEATS-like Dict"""
+        """Convert Pymorphy's OpencorporaTag to FEATS-like Dict"""
         tag = parse.tag
         pym_ud_str = self.converter(str(tag))
         pym_morph = self._morph_str_to_dict(pym_ud_str)
@@ -185,14 +184,14 @@ class Disambiguator:
         pym_morphs: list[dict[str, str]],
         weights: SimilarityWeighting = None,
     ):
-        """Return **index** of the best pymorphy2 morphological analysis
-        in the list,both provided as dictionaries.
+        """Return **index** of the best pymorphy morphological analysis
+        in the list, both given as dictionaries.
 
         "Best" means "closest to the spacy interpretation".
 
         Args:
-            sp_morph (dict[str, str]): sp_morph
-            pym_morphs (list[dict[str, str]]): pym_morphs
+            sp_morph (dict[str, str]): Spacy morphology
+            pym_morphs (list[dict[str, str]]): Pymorphy parses to disambiguate
         """
         best_sim = -1
         best_morphology_index = None
@@ -211,7 +210,7 @@ class Disambiguator:
     def select_best_pymorphy_parsing(
         self, token: Token, pym_morphs: list[Parse]
     ) -> Parse:
-        """Given a spacy Token and a list of Pymorphy2's Parse parsing results,
+        """Given a spacy Token and a list of Pymorphy's Parse parsing results,
         pick the most likely one.
 
         See https://pymorphy2.readthedocs.io/en/stable/user/guide.html#select-correct
@@ -222,7 +221,7 @@ class Disambiguator:
         # Spacy morphology as dictionary
         sp_morph = self.get_spacy_morph(token)
 
-        # Pymorphy2 parsing results (+ as dicts)
+        # Pymorphy parsing results (+ as dicts)
         pym_morphs = self.pymorphy_analyzer.parse(token.text)
         pym_dicts = [self._pym_morph_to_dict(x) for x in pym_morphs]
 
@@ -233,13 +232,11 @@ class Disambiguator:
         best_morph = pym_morphs[best_morph_i]
 
         res = best_morph
-        #  if len(pym_morphs)>1:
-        #  b()
         return res
 
     def get_with_disambiguation(self, token: Token | Doc) -> Parse:
-        """Given a spacy Token or Doc, run pymorphy2 and return the best possible
-        pymorphy2 analysis/parsing/morphology ("разбор") by using
+        """Given a spacy Token or Doc, run pymorphy and return the best possible
+        pymorphy analysis/parsing/morphology ("разбор") by using
         the morphology analysis (analyses) done by spacy.
 
         In my experience, spacy's morphological analysis is better than
@@ -262,7 +259,7 @@ class Disambiguator:
         # Spacy morphology as dictionary
         sp_morph = self.get_spacy_morph(token)
 
-        # Pymorphy2 parsing results
+        # Pymorphy parsing results
         pym_morphs = self.pymorphy_analyzer.parse(token.text)
 
         best_morph = self.select_best_pymorphy_parsing(
