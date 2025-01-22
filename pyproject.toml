@@ -5,9 +5,6 @@ includes = ["src/pymorphy_spacy_disambiguation"]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
-[tool.pytest.ini_options]
-markers = ['now']
-
 [tool.uv.sources]
 uk-core-news-sm = { url = "https://github.com/explosion/spacy-models/releases/download/uk_core_news_sm-3.8.0/uk_core_news_sm-3.8.0-py3-none-any.whl" }
 
@@ -24,7 +21,7 @@ dependencies = [
     "spacy>=3.7.5",
 ]
 name = "pymorphy-spacy-disambiguation"
-version = "0.1.4"
+version = "0.1.5"
 description = "Use spacy to disambiguate pymorphy3 morphology analyses."
 readme = "README.md"
 
