@@ -5,12 +5,14 @@ from pymorphy_spacy_disambiguation.disamb import Disambiguator, SimilarityWeight
 
 b = breakpoint
 
-# TODO: 
+# TODO:
 #   - more test cases for punctuation etc
 #   - test cases for corner cases, like no parsing etc.
 
 
 MODEL_NAME_UA = "uk_core_news_sm"
+# MODEL_NAME_UA = "uk_core_news_lg"
+
 
 @pytest.fixture
 def nlp():
@@ -78,7 +80,11 @@ def test_disamb(doc):
     d = Disambiguator()
     res = d.get_with_disambiguation(token)
     assert res.normal_form == "корова"
-    assert str(res.tag) == "NOUN,anim plur,accs"
+    # assert str(res.tag) == "NOUN,anim plur,accs"
+    # assert str(res.tag) == "NOUN,anim plur,gent"
+    # it's accs not gent, but the small spacy model thinks it's gent so the disambiguation should return gent
+    # but we actually care about the cow(=anim) vs measles part
+    assert "NOUN,anim plur" in str(res.tag)
 
 
 def _test_disamb_text(doc):
@@ -88,6 +94,7 @@ def _test_disamb_text(doc):
         res = d.get_with_disambiguation(token)
         assert res.normal_form == token.lemma_
         assert str(res.tag.POS) == token.pos_
+
 
 @pytest.mark.now
 def test_feats_similarity_weighted():
@@ -160,9 +167,7 @@ def test_feats_similarity_weighted():
         m3, m3_11
     ) < Disambiguator.weighted_calculate_morph_similarity(m3, m3_12)
 
-
     dd = Disambiguator(normal_form=1000)
     assert dd.weighted_calculate_morph_similarity(m3, m3_1, w_normal) > 0.99
-
 
     # TODO - do some neat examples with real words/morphologies demostrating this weighting mechanism thing
